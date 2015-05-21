@@ -1,0 +1,37 @@
+/*
+ *  mechanicalTurk.c
+ *
+ *  Edited by Josfer and Lachlan
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include "Game.h"
+#include "mechanicalTurk.h"
+
+static action spinoff(action nextAction);
+action decideAction (Game g) {
+
+
+   action nextAction;
+   int currentPlayer = getWhoseTurn(g);
+   int mjCounter = getStudents(g,currentPlayer,STUDENT_MJ);
+   int mtvCounter = getStudents(g,currentPlayer,STUDENT_MTV);
+   int mmoneyCounter = getStudents(g,currentPlayer,STUDENT_MMONEY);
+
+   if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1){
+      nextAction = spinoff(nextAction);
+   } else {
+      nextAction.actionCode = PASS;
+   }
+   return nextAction;
+}
+
+static action spinoff(action nextAction){
+
+   action doSpinoff = nextAction;
+   doSpinoff.actionCode = START_SPINOFF;
+   return doSpinoff;
+}
