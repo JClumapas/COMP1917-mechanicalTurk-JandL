@@ -14,10 +14,24 @@
 
 #define MAX_CAMPUSES ? //i forgot the value
 #define MAX_ARCS ? //i forgot the value
+#define WORKING_PATH
+
+//enter values according to working path
+#define UNI_A_CAMPUS_A 0
+#define UNI_A_CAMPUS_B 
+#define UNI_B_CAMPUS_A 
+#define UNI_B_CAMPUS_B 
+#define UNI_C_CAMPUS_A 
+#define UNI_C_CAMPUS_B 
+
 static action spinoff(action nextAction);
 static action buildARC(action nextAction, int arcCounter,int currentPlayer);
 static action buildCampus(action nextAction,int currentPlayer);
 static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
+static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer);
+static path campusPathGenerator(action nextAction, int currentPlayer);
+static path go8PathGenerator(action nextAction, int currentPlayer);
+
 action decideAction (Game g) {
 
    action nextAction;
