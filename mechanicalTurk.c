@@ -77,16 +77,54 @@ static action spinoff(action nextAction){
 }
 
 static action buildARC(action nextAction, int arcCounter,int currentPlayer){
+   action newAction = nextAction;
+   newAction.destination = arcPathGenerator(nextAction, arcCounter, currentPlayer);
+   return newAction;
    //maybe we can work something out with your working path to decide
    //where to build
    //We may or may not need to have separate strategies depending
-   //which playerNumber we end up
+   //which playerNumber we end up as
 }
 
 static action buildCampus(action nextAction,int currentPlayer){
+   action newAction = nextAction;
+   nextAction = campusPathGenerator(nextAction, int currentPlayer);
+   return newAction;
    //similar to buildARC
 }
 
 static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
+   action newAction = nextAction;
+   nextAction = go8PathGenerator(nextAction, int currentPlayer);
+   return newAction;
    //similar to buildARC and buildCampus
+}
+
+static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer){
+
+   path destination[PATH_LIMIT]={'\0'};
+   int initialPos = 0;
+   if (currentPlayer == UNI_A){
+      initialPos = UNI_A_CAMPUS_A; //or CAMPUS_B depend on strategy
+   } else if (currentPlayer == UNI_B){
+      initialPos = UNI_B_CAMPUS_A;
+   } else if (currentPlayer == UNI_C){
+      initialPos = UNI_C_CAMPUS_A;
+   }
+
+   char tempPath[intialPos+arcCounter+1] = {'\0'};
+   char workingPath[90] = WORKING_PATH;
+
+   int counter = 0;
+   while (counter <= (initialPos+arcCounter+1)){
+      tempPath[counter] = workingPath[counter];
+      counter++;
+   }
+   while (getARC(g,tempPath) != VACANT_ARC){
+      tempPath[counter] = workingPath[counter];
+      counter++;
+   }
+
+   strncpy(destination, tempPath, sizeof (tempPath));
+   return destination;
 }
