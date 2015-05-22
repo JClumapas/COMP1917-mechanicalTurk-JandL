@@ -12,25 +12,25 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
-#define MAX_CAMPUSES ? //i forgot the value
-#define MAX_ARCS ? //i forgot the value
+//#define MAX_CAMPUSES ? //i forgot the value
+//#define MAX_ARCS ? //i forgot the value
 #define WORKING_PATH
 
 //enter values according to working path
-#define UNI_A_CAMPUS_A 0
-#define UNI_A_CAMPUS_B 
-#define UNI_B_CAMPUS_A 
-#define UNI_B_CAMPUS_B 
-#define UNI_C_CAMPUS_A 
-#define UNI_C_CAMPUS_B 
+#define UNI_A_CAMPUS_A 53
+#define UNI_A_CAMPUS_B 26
+#define UNI_B_CAMPUS_A 17
+#define UNI_B_CAMPUS_B 44
+#define UNI_C_CAMPUS_A 8
+#define UNI_C_CAMPUS_B 35
 
 static action spinoff(action nextAction);
 static action buildARC(action nextAction, int arcCounter,int currentPlayer);
 static action buildCampus(action nextAction,int currentPlayer);
 static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
 static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer);
-static path campusPathGenerator(action nextAction, int currentPlayer);
-static path go8PathGenerator(action nextAction, int currentPlayer);
+//static path campusPathGenerator(action nextAction, int currentPlayer);
+//static path go8PathGenerator(action nextAction, int currentPlayer);
 
 action decideAction (Game g) {
 
@@ -53,26 +53,28 @@ action decideAction (Game g) {
    //Actions for our first turn
    // <=3 because we don't know what playerNumber we end up as
    if (currentTurn <= 3){
-      if ((bpsCounter >= 1)&&(bqnCounter >= 1)
+      /*if ((bpsCounter >= 1)&&(bqnCounter >= 1)
          &&(mjCounter >= 1)&&(mtvCounter >= 1)
          &&(arcCounter ==2)){
          nextAction = buildCampus(nextAction);
-      } else if ((bpsCunter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildArc(nextAction,arcCounter);
+      } else*/
+      if ((bpsCounter >= 1)&&(bqnCounter >= 1)){
+         nextAction = buildArc(nextAction,arcCounter,currentPlayer);
       } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1){
          nextAction = spinoff(nextAction);
       } else {
          nextAction.actionCode = PASS;
       }
    }else{
-      if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
+      /*if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
          &&(mmoneyCounter >= 3)&&(GO8Counter <= 8){
          nextAction = buildGO8(nextAction,GO8Counter,currentPlayer);
       } else if ((bpsCounter >= 1)&&(bqnCounter >= 1)
          &&(mjCounter >= 1)&&(mtvCounter >= 1){
          nextAction = buildCampus(nextAction);
-      } else if ((bpsCunter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildArc(nextAction,arcCounter);
+      } else */
+      if ((bpsCunter >= 1)&&(bqnCounter >= 1)){
+         nextAction = buildArc(nextAction,arcCounter,currentPlayer);
       } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1){
          nextAction = spinoff(nextAction);
       } else {
@@ -100,19 +102,19 @@ static action buildARC(action nextAction, int arcCounter,int currentPlayer){
    //which playerNumber we end up as
 }
 
-static action buildCampus(action nextAction,int currentPlayer){
+/*static action buildCampus(action nextAction,int currentPlayer){
    action newAction = nextAction;
    nextAction = campusPathGenerator(nextAction, int currentPlayer);
    return newAction;
    //similar to buildARC
-}
+}*/
 
-static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
+/*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
    action newAction = nextAction;
    nextAction = go8PathGenerator(nextAction, int currentPlayer);
    return newAction;
    //similar to buildARC and buildCampus
-}
+}*/
 
 static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer){
 
