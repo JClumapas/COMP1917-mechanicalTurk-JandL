@@ -25,10 +25,10 @@
 #define UNI_C_CAMPUS_B 35
 
 static action spinoff(action nextAction);
-static action buildARC(action nextAction, int arcCounter,int currentPlayer);
-static action buildCampus(action nextAction,int currentPlayer);
-static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
-static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer);
+static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer);
+//static action buildCampus(action nextAction,int currentPlayer);
+//static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
+static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
 //static path campusPathGenerator(action nextAction, int currentPlayer);
 //static path go8PathGenerator(action nextAction, int currentPlayer);
 
@@ -44,11 +44,11 @@ action decideAction (Game g) {
    int mmoneyCounter = getStudents(g,currentPlayer,STUDENT_MMONEY);
 
    int arcCounter = getARCs(g,currentPlayer);
-   int campusCounter = getCampuses(g,currentPlayer);
+   /*int campusCounter = getCampuses(g,currentPlayer);
    int totalCampuses = 0;
    totalCampuses = totalCampuses + getCampuses(g,UNI_A)
                    + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);
-   int GO8Counter = getGO8s(g,currentPlayer);
+   int GO8Counter = getGO8s(g,currentPlayer);*/
 
    //Actions for our first turn
    // <=3 because we don't know what playerNumber we end up as
@@ -59,8 +59,8 @@ action decideAction (Game g) {
          nextAction = buildCampus(nextAction);
       } else*/
       if ((bpsCounter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildArc(nextAction,arcCounter,currentPlayer);
-      } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1){
+         nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
+      } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
          nextAction = spinoff(nextAction);
       } else {
          nextAction.actionCode = PASS;
@@ -73,9 +73,9 @@ action decideAction (Game g) {
          &&(mjCounter >= 1)&&(mtvCounter >= 1){
          nextAction = buildCampus(nextAction);
       } else */
-      if ((bpsCunter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildArc(nextAction,arcCounter,currentPlayer);
-      } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1){
+      if ((bpsCounter >= 1)&&(bqnCounter >= 1)){
+         nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
+      } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
          nextAction = spinoff(nextAction);
       } else {
          nextAction.actionCode = PASS;
@@ -92,9 +92,8 @@ static action spinoff(action nextAction){
    return doSpinoff;
 }
 
-static action buildARC(action nextAction, int arcCounter,int currentPlayer){
-   action newAction = nextAction;
-   newAction.destination = arcPathGenerator(nextAction, arcCounter, currentPlayer);
+static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer){
+   action newAction = arcPathGenerator(g, nextAction, arcCounter, currentPlayer);
    return newAction;
    //maybe we can work something out with your working path to decide
    //where to build
@@ -116,9 +115,10 @@ static action buildARC(action nextAction, int arcCounter,int currentPlayer){
    //similar to buildARC and buildCampus
 }*/
 
-static path arcPathGenerator(action nextAction, int arcCounter, int currentPlayer){
+static action arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer){
 
-   path destination[PATH_LIMIT]={'\0'};
+   action newAction = nextAction;
+   //path destination[PATH_LIMIT]={'\0'};
    int initialPos = 0;
    if (currentPlayer == UNI_A){
       initialPos = UNI_A_CAMPUS_A; //or CAMPUS_B depend on strategy
@@ -128,7 +128,7 @@ static path arcPathGenerator(action nextAction, int arcCounter, int currentPlaye
       initialPos = UNI_C_CAMPUS_A;
    }
 
-   char tempPath[intialPos+arcCounter+1] = {'\0'};
+   char tempPath[90] = {'\0'};
    char workingPath[90] = WORKING_PATH;
 
    int counter = 0;
@@ -141,6 +141,6 @@ static path arcPathGenerator(action nextAction, int arcCounter, int currentPlaye
       counter++;
    }
 
-   strncpy(destination, tempPath, sizeof (tempPath));
-   return destination;
+   strncpy(newAction.destination, tempPath, sizeof (tempPath));
+   return newAction;
 }
