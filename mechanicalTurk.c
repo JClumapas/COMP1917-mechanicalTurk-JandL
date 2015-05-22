@@ -14,7 +14,7 @@
 
 //#define MAX_CAMPUSES ? //i forgot the value
 //#define MAX_ARCS ? //i forgot the value
-#define WORKING_PATH
+#define WORKING_PATH {'L','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','L','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','B','R','R','R','R','R','R','R'}
 
 //enter values according to working path
 #define UNI_A_CAMPUS_A 53
