@@ -136,18 +136,19 @@ static action arcPathGenerator(Game g, action nextAction, int arcCounter, int cu
       tempPath[counter] = workingPath[counter];
       counter++;
    }
-   while (counter <= (initialPos+arcCounter+1){
+   while (counter <= (initialPos+arcCounter+1)){
       while (getARC(g,tempPath) != VACANT_ARC){
          if( tempPath[counter]== 'R'){
-            tempPath[counter] == 'L';
+            tempPath[counter] = 'L';
          }else if (tempPath[counter] == 'L'){
-            temPath[Counter]== 'R';
+            tempPath[counter]= 'R';
          }else if (tempPath[counter] == 'B'){
-            tempPath[counter] == 'R';
+            tempPath[counter] = 'R';
          }
       }
       counter++;
    }
+
 
 
    strncpy(newAction.destination, tempPath, sizeof (tempPath));
