@@ -12,30 +12,37 @@
 #include "Game.h"
 #include "mechanicalTurk.h"
 
-//#define MAX_CAMPUSES ? //i forgot the value
-//#define MAX_ARCS ? //i forgot the value
-#define WORKING_PATH {'L','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','L','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','B','R','R','R','R','R','R','R'}
+//#define MAX_CAMPUSES 54
+#define MAX_ARCS 90
+#define WORKING_PATH {'L','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','L','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','B','L','L','R','R','R','R','R'}
 
-//enter values according to working path
-#define UNI_A_CAMPUS_A 0
+/*enter values according to working path
+/#define UNI_A_CAMPUS_A 53
 #define UNI_A_CAMPUS_B 26
 #define UNI_B_CAMPUS_A 17
 #define UNI_B_CAMPUS_B 44
 #define UNI_C_CAMPUS_A 8
 #define UNI_C_CAMPUS_B 35
+*/
 
 static action spinoff(action nextAction);
 static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer);
-//static action buildCampus(action nextAction,int currentPlayer);
+static action buildCampus(Game g, action nextAction,int currentPlayer);
 //static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
-static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
+//static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
 //static path campusPathGenerator(action nextAction, int currentPlayer);
 //static path go8PathGenerator(action nextAction, int currentPlayer);
 
 action decideAction (Game g) {
 
    action nextAction;
-   int currentTurn = getTurnNumber(g);
+   nextAction.actionCode = PASS;
+   int i = 0;
+   while (i < PATH_LIMIT) {
+      nextAction.destination[i] = '\0';
+      i++;
+   }
+//   int currentTurn = getTurnNumber(g);
    int currentPlayer = getWhoseTurn(g);
    int bpsCounter = getStudents(g,currentPlayer,STUDENT_BPS);
    int bqnCounter = getStudents(g,currentPlayer,STUDENT_BQN);
@@ -51,28 +58,31 @@ action decideAction (Game g) {
    int GO8Counter = getGO8s(g,currentPlayer);*/
 
    //Actions for our first turn
-   // <=3 because we don't know what playerNumber we end up as
-   if (currentTurn <= 3){
-      /*if ((bpsCounter >= 1)&&(bqnCounter >= 1)
+   
+      if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)
          &&(mjCounter >= 1)&&(mtvCounter >= 1)
-         &&(arcCounter ==2)){
-         nextAction = buildCampus(nextAction);
-      } else*/
-      if ((bpsCounter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
-      } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
-         nextAction = spinoff(nextAction);
-      } else {
-         nextAction.actionCode = PASS;
+         &&(arcCounter == 2)){
+         nextAction = buildCampus(g,nextAction,currentPlayer);
+         printf("%s\n", nextAction.destination);
       }
-   }else{
-      /*if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
+      if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
+         nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
+         printf("%s\n", nextAction.destination);
+      }
+      if (nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
+         nextAction = spinoff(nextAction);
+         printf("%s\n", nextAction.destination);
+      } 
+
+   
+      /*
+      if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
          &&(mmoneyCounter >= 3)&&(GO8Counter <= 8){
          nextAction = buildGO8(nextAction,GO8Counter,currentPlayer);
       } else if ((bpsCounter >= 1)&&(bqnCounter >= 1)
          &&(mjCounter >= 1)&&(mtvCounter >= 1){
-         nextAction = buildCampus(nextAction);
-      } else */
+         nextAction = buildCampus(nextAction, currentPlayer);
+      } else {
       if ((bpsCounter >= 1)&&(bqnCounter >= 1)){
          nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
       } else if ((mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
@@ -80,7 +90,7 @@ action decideAction (Game g) {
       } else {
          nextAction.actionCode = PASS;
       }
-   }
+   */
 
    return nextAction;
 }
@@ -93,21 +103,94 @@ static action spinoff(action nextAction){
 }
 
 static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer){
-   action newAction = arcPathGenerator(g, nextAction, arcCounter, currentPlayer);
+   
+   action newAction = nextAction;
    newAction.actionCode = OBTAIN_ARC;
+   int i = 0;
+   while (i < PATH_LIMIT) {
+      newAction.destination[i] = '\0';
+      i++;
+   }
+
+   char tempPath[90] = {'\0'};
+   char workingPath[90] = WORKING_PATH;
+
+   i = 0;
+   while (i < 90) {
+      tempPath[i] = '\0';
+      i++;
+   }
+
+   
+   int counter = 0;
+   int moveMade = 0;
+   //printf("max arcs %d\n", MAX_ARCS);
+   tempPath[0] = workingPath[0];
+   newAction.destination[0] = tempPath[0];
+   while (moveMade == 0 && counter < MAX_ARCS) {
+      tempPath[counter] = workingPath[counter];
+      //printf("%s\n", tempPath);
+      //printf("Here and counter is %d\n", counter);
+      newAction.destination[counter] = tempPath[counter];
+      if (isLegalAction(g, newAction) == TRUE){
+         moveMade = 1;
+         //printf("changing movemade %d\n", moveMade);
+      }
+      counter++;
+   }
+
+   if (moveMade == 0) {
+      newAction.actionCode = PASS;
+   }
+
    return newAction;
-   //maybe we can work something out with your working path to decide
-   //where to build
-   //We may or may not need to have separate strategies depending
-   //which playerNumber we end up as
 }
 
-/*static action buildCampus(action nextAction,int currentPlayer){
+static action buildCampus(Game g,action nextAction,int currentPlayer){
+   
    action newAction = nextAction;
-   nextAction = campusPathGenerator(nextAction, int currentPlayer);
+   newAction.actionCode = BUILD_CAMPUS;
+   int i = 0;
+   while (i < PATH_LIMIT) {
+      newAction.destination[i] = '\0';
+      i++;
+   }
+
+   char tempPath[90] = {'\0'};
+   char workingPath[90] = WORKING_PATH;
+
+   i = 0;
+   while (i < 90) {
+      tempPath[i] = '\0';
+      i++;
+   }
+
+   
+   int counter = 0;
+   int moveMade = 0;
+   //printf("max arcs %d\n", MAX_ARCS);
+   tempPath[0] = workingPath[0];
+   newAction.destination[0] = tempPath[0];
+   while (moveMade == 0 && counter < MAX_ARCS) {
+      tempPath[counter] = workingPath[counter];
+      //printf("%s\n", tempPath);
+      //printf("Here and counter is %d\n", counter);
+      newAction.destination[counter] = tempPath[counter];
+      if (isLegalAction(g, newAction) == TRUE){
+         moveMade = 1;
+         printf("move Made %s\n", tempPath);
+         //printf("changing movemade %d\n", moveMade);
+      }
+      counter++;
+   }
+
+   if (moveMade == 0) {
+      newAction.actionCode = PASS;
+   }
+
    return newAction;
-   //similar to buildARC
-}*/
+}
+
 
 /*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
    action newAction = nextAction;
@@ -116,27 +199,40 @@ static action buildARC(Game g, action nextAction, int arcCounter,int currentPlay
    //similar to buildARC and buildCampus
 }*/
 
-static action arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer){
-
+/*static action arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer){
+ 
+   action newAction = nextAction;
+   char tempPath[90] = {'\0'};
+   char workingPath[90] = WORKING_PATH;
+   int counter = 0;
+   int moveMade = 0;
+   tempPath[0] = workingPath[0];
+   newAction.destination[0] = tempPath[0];
+   while (moveMade == 0 && counter < MAX_ARCS) {
+      tempPath[counter] = workingPath[counter];
+      newAction.destination[counter] = tempPath[counter];
+      if (isLegalAction(g, newAction) == TRUE){
+         moveMade = 1;
+      }
+      counter++;
+   }
+   return newAction;
+   // doesnt matter where it starts this just looks where we can make an arc on a legal action and makes it straight away
+   
    action newAction = nextAction;
    //path destination[PATH_LIMIT]={'\0'};
    int initialPos = 0;
    if (currentPlayer == UNI_A){
       initialPos = UNI_A_CAMPUS_A; //or CAMPUS_B depend on strategy
-      printf("You are uni A!\n");
    } else if (currentPlayer == UNI_B){
       initialPos = UNI_B_CAMPUS_A;
-      printf("You are uni B!\n");
    } else if (currentPlayer == UNI_C){
       initialPos = UNI_C_CAMPUS_A;
-      printf("You are uni C!\n");
    }
 
-   char tempPath[90] = {'\0'};
-   char workingPath[90] = WORKING_PATH;
 
    int counter = 0;
-   while (counter <= (initialPos+arcCounter)){
+   while (counter <= (initialPos+1)){
       tempPath[counter] = workingPath[counter];
       counter++;
    }
@@ -148,8 +244,6 @@ static action arcPathGenerator(Game g, action nextAction, int arcCounter, int cu
             tempPath[counter]= 'R';
          }else if (tempPath[counter] == 'B'){
             tempPath[counter] = 'R';
-         }else{
-            tempPath[counter] = 'R';
          }
       }
       counter++;
@@ -157,7 +251,6 @@ static action arcPathGenerator(Game g, action nextAction, int arcCounter, int cu
 
 
 
-
    strncpy(newAction.destination, tempPath, sizeof (tempPath));
    return newAction;
-}
+}*/
