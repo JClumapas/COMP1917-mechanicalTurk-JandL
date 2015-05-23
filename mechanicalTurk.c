@@ -17,7 +17,7 @@
 #define WORKING_PATH {'L','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','L','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','B','R','R','R','R','R','R','R'}
 
 //enter values according to working path
-#define UNI_A_CAMPUS_A 53
+#define UNI_A_CAMPUS_A 0
 #define UNI_A_CAMPUS_B 26
 #define UNI_B_CAMPUS_A 17
 #define UNI_B_CAMPUS_B 44
@@ -94,6 +94,7 @@ static action spinoff(action nextAction){
 
 static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer){
    action newAction = arcPathGenerator(g, nextAction, arcCounter, currentPlayer);
+   newAction.actionCode = OBTAIN_ARC;
    return newAction;
    //maybe we can work something out with your working path to decide
    //where to build
@@ -122,17 +123,20 @@ static action arcPathGenerator(Game g, action nextAction, int arcCounter, int cu
    int initialPos = 0;
    if (currentPlayer == UNI_A){
       initialPos = UNI_A_CAMPUS_A; //or CAMPUS_B depend on strategy
+      printf("You are uni A!\n");
    } else if (currentPlayer == UNI_B){
       initialPos = UNI_B_CAMPUS_A;
+      printf("You are uni B!\n");
    } else if (currentPlayer == UNI_C){
       initialPos = UNI_C_CAMPUS_A;
+      printf("You are uni C!\n");
    }
 
    char tempPath[90] = {'\0'};
    char workingPath[90] = WORKING_PATH;
 
    int counter = 0;
-   while (counter <= (initialPos+1)){
+   while (counter <= (initialPos+arcCounter)){
       tempPath[counter] = workingPath[counter];
       counter++;
    }
@@ -144,10 +148,13 @@ static action arcPathGenerator(Game g, action nextAction, int arcCounter, int cu
             tempPath[counter]= 'R';
          }else if (tempPath[counter] == 'B'){
             tempPath[counter] = 'R';
+         }else{
+            tempPath[counter] = 'R';
          }
       }
       counter++;
    }
+
 
 
 
