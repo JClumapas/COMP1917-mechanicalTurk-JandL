@@ -28,6 +28,8 @@
 static action spinoff(action nextAction);
 static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer);
 static action buildCampus(Game g, action nextAction,int currentPlayer);
+static action exchangeBPS(Game g,action nextAction);
+static action exchangeBPS(Game g,action nextAction);
 //static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
 //static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
 //static path campusPathGenerator(action nextAction, int currentPlayer);
@@ -73,8 +75,21 @@ action decideAction (Game g) {
          nextAction = spinoff(nextAction);
          printf("%s\n", nextAction.destination);
       } 
-
-   
+      if (next.actionCode == PASS && (bpsCounter >=4)){
+         nextAction = exchangeStudents(g,nextAction);
+      }
+       if (bqnCounter >=4){
+         nextAction = exchangeStudents(g,nextAction);
+      }
+       if (mjCounter >=4){
+         nextAction = exchangeStudents(g,nextAction);
+      }
+      if (mtvCounter >=4){
+         nextAction = exchangeStudents(g,nextAction);
+      }
+      if (mmoneyCounter >=4){
+         nextAction = exchangeStudents(g,nextAction);
+      }
       /*
       if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
          &&(mmoneyCounter >= 3)&&(GO8Counter <= 8){
@@ -191,6 +206,15 @@ static action buildCampus(Game g,action nextAction,int currentPlayer){
    return newAction;
 }
 
+static action exchangeBPS(Game g,nextAction){
+   
+   action newAction = nextAction;
+   newAction.actionCode = RETRAIN_STUDENTS;
+   newAction.disciplineFrom = STUDENT_BPS;
+   newAction.disciplineTo = STUDENT_MJ;
+   
+   return newAction;
+}
 
 /*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
    action newAction = nextAction;
