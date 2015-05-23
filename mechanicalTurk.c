@@ -28,8 +28,11 @@
 static action spinoff(action nextAction);
 static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer);
 static action buildCampus(Game g, action nextAction,int currentPlayer);
-static action exchangeBPS(Game g,action nextAction);
-static action exchangeBPS(Game g,action nextAction);
+static action exchangeBPS(Game g,action nextAction,int mjCounter, int mtvCounter);
+static action exchangeBQN(Game g,action nextAction,int mtvCounter,int mmoneyCounter);
+static action exchangeMJ(Game g,action nextAction,int mmoneyCounter, int bpsCounter);
+static action exchangeMTV(Game g,action nextAction,int bpsCounter,int bqnCounter);
+static action exchangeMMONEY(Game g,action nextAction,int bqnCounter,int mjCounter);
 //static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
 //static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
 //static path campusPathGenerator(action nextAction, int currentPlayer);
@@ -65,30 +68,30 @@ action decideAction (Game g) {
          &&(mjCounter >= 1)&&(mtvCounter >= 1)
          &&(arcCounter == 2)){
          nextAction = buildCampus(g,nextAction,currentPlayer);
-         printf("%s\n", nextAction.destination);
+         //printf("%s\n", nextAction.destination);
       }
       if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
          nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
-         printf("%s\n", nextAction.destination);
+         //printf("%s\n", nextAction.destination);
       }
       if (nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
          nextAction = spinoff(nextAction);
-         printf("%s\n", nextAction.destination);
+         //printf("%s\n", nextAction.destination);
       } 
-      if (next.actionCode == PASS && (bpsCounter >=4)){
-         nextAction = exchangeStudents(g,nextAction);
+      if (bpsCounter >=4){
+         nextAction = exchangeStudents(g,nextAction,mjCounter,mtvCounter);
       }
        if (bqnCounter >=4){
-         nextAction = exchangeStudents(g,nextAction);
+         nextAction = exchangeStudents(g,nextAction,mtvCounter,mmoneyCounter);
       }
        if (mjCounter >=4){
-         nextAction = exchangeStudents(g,nextAction);
+         nextAction = exchangeStudents(g,nextAction,mmoneyCounter,bpsCounter);
       }
       if (mtvCounter >=4){
-         nextAction = exchangeStudents(g,nextAction);
+         nextAction = exchangeStudents(g,nextAction,bpsCounter,bqnCounter);
       }
       if (mmoneyCounter >=4){
-         nextAction = exchangeStudents(g,nextAction);
+         nextAction = exchangeStudents(g,nextAction,bqnCounter,mjCounter);
       }
       /*
       if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
@@ -206,16 +209,90 @@ static action buildCampus(Game g,action nextAction,int currentPlayer){
    return newAction;
 }
 
-static action exchangeBPS(Game g,nextAction){
+static action exchangeBPS(Game g,nextAction,int mjCounter, int mtvCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
-   newAction.disciplineFrom = STUDENT_BPS;
-   newAction.disciplineTo = STUDENT_MJ;
-   
+   if (mjCounter <= 1){
+      newAction.disciplineFrom = STUDENT_BPS;
+      newAction.disciplineTo = STUDENT_MJ;
+   } else if (mtvCounter <= 1){
+      newAction.disciplineFrom = STUDENT_BPS;
+      newAction.disciplineTo = STUDENT_MTV;
+   } else {
+      newAction.disciplineFrom = STUDENT_BPS;
+      newAction.disciplineTo = STUDENT_BQN;
+   }
    return newAction;
 }
 
+static action exchangeBQN(Game g,nextAction,int mtvCounter, int mmoneyCounter){
+   
+   action newAction = nextAction;
+   newAction.actionCode = RETRAIN_STUDENTS;
+   if (mtvCounter <= 1){
+      newAction.disciplineFrom = STUDENT_BQN;
+      newAction.disciplineTo = STUDENT_MTV;
+   } else if (mmoneyCounter <= 1){
+      newAction.disciplineFrom = STUDENT_BQN;
+      newAction.disciplineTo = STUDENT_MMMONEY;
+   } else {
+      newAction.disciplineFrom = STUDENT_BQN;
+      newAction.disciplineTo = STUDENT_BPS;
+   }
+   return newAction;
+}
+
+static action exchangeMJ(Game g,nextAction,int mmoneyCounter, int bpsCounter){
+   
+   action newAction = nextAction;
+   newAction.actionCode = RETRAIN_STUDENTS;
+   if (mmoneyCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MJ;
+      newAction.disciplineTo = STUDENT_MMONEY;
+   } else if (bpsCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MJ;
+      newAction.disciplineTo = STUDENT_BPS;
+   } else {
+      newAction.disciplineFrom = STUDENT_MJ;
+      newAction.disciplineTo = STUDENT_BQN;
+   }
+   return newAction;
+}
+
+static action exchangeMTV(Game g,nextAction,int bpsCounter, int bqnCounter){
+   
+   action newAction = nextAction;
+   newAction.actionCode = RETRAIN_STUDENTS;
+   if (bpsCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MTV;
+      newAction.disciplineTo = STUDENT_BPS;
+   } else if (bqnCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MTV;
+      newAction.disciplineTo = STUDENT_BQN;
+   } else {
+      newAction.disciplineFrom = STUDENT_MTV;
+      newAction.disciplineTo = STUDENT_MJ;
+   }
+   return newAction;
+}
+
+static action exchangeMMONEY(Game g,nextAction,int bqnCounter, int mjCounter){
+   
+   action newAction = nextAction;
+   newAction.actionCode = RETRAIN_STUDENTS;
+   if (bqnCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MMONEY;
+      newAction.disciplineTo = STUDENT_BQN;
+   } else if (mjCounter <= 1){
+      newAction.disciplineFrom = STUDENT_MMONEY;
+      newAction.disciplineTo = STUDENT_MJ;
+   } else {
+      newAction.disciplineFrom = STUDENT_MMONEY;
+      newAction.disciplineTo = STUDENT_BPS;
+   }
+   return newAction;
+}
 /*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
    action newAction = nextAction;
    nextAction = go8PathGenerator(nextAction, int currentPlayer);
