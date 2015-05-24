@@ -26,12 +26,16 @@
 */
 
 static action spinoff(action nextAction);
-static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer);
+static action buildARC(Game g, action nextAction,int currentPlayer);
 static action buildCampus(Game g, action nextAction,int currentPlayer);
 static action exchangeBPS(Game g,action nextAction,int mjCounter, int mtvCounter);
+
 static action exchangeBQN(Game g,action nextAction,int mtvCounter,int mmoneyCounter);
+
 static action exchangeMJ(Game g,action nextAction,int mmoneyCounter, int bpsCounter);
+
 static action exchangeMTV(Game g,action nextAction,int bpsCounter,int bqnCounter);
+
 static action exchangeMMONEY(Game g,action nextAction,int bqnCounter,int mjCounter);
 //static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
 //static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
@@ -55,7 +59,7 @@ action decideAction (Game g) {
    int mtvCounter = getStudents(g,currentPlayer,STUDENT_MTV);
    int mmoneyCounter = getStudents(g,currentPlayer,STUDENT_MMONEY);
 
-   int arcCounter = getARCs(g,currentPlayer);
+   //int arcCounter = getARCs(g,currentPlayer);
    /*int campusCounter = getCampuses(g,currentPlayer);
    int totalCampuses = 0;
    totalCampuses = totalCampuses + getCampuses(g,UNI_A)
@@ -63,36 +67,50 @@ action decideAction (Game g) {
    int GO8Counter = getGO8s(g,currentPlayer);*/
 
    //Actions for our first turn
-   
-      if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)
-         &&(mjCounter >= 1)&&(mtvCounter >= 1)
-         &&(arcCounter == 2)){
+      if (bpsCounter >=4){
+         
+         nextAction = exchangeBPS(g,nextAction,mjCounter,mtvCounter);
+      
+      }
+       
+      if (bqnCounter >=4){
+         
+          nextAction = exchangeBQN(g,nextAction,mtvCounter,mmoneyCounter);
+      
+      }
+       
+      if (mjCounter >=4){
+         
+         nextAction = exchangeMJ(g,nextAction,mmoneyCounter,bpsCounter);
+      
+      }
+      
+      if (mtvCounter >=4){
+         
+         nextAction = exchangeMTV(g,nextAction,bpsCounter,bqnCounter);
+      
+      }
+      
+      if (mmoneyCounter >=4){
+         
+         nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
+      
+      }
+     
+      if ((nextAction.actionCode == PASS || nextAction.actionCode == RETRAIN_STUDENTS) && (bpsCounter >= 1)&&(bqnCounter >= 1)&&(mjCounter >= 1)&&(mtvCounter >= 1)){
          nextAction = buildCampus(g,nextAction,currentPlayer);
-         //printf("%s\n", nextAction.destination);
+         printf("%s\n", nextAction.destination);
       }
       if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildARC(g,nextAction,arcCounter,currentPlayer);
-         //printf("%s\n", nextAction.destination);
+         nextAction = buildARC(g,nextAction,currentPlayer);
+         printf("%s\n", nextAction.destination);
       }
       if (nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
          nextAction = spinoff(nextAction);
-         //printf("%s\n", nextAction.destination);
+         printf("%s\n", nextAction.destination);
       } 
-      if (bpsCounter >=4){
-         nextAction = exchangeStudents(g,nextAction,mjCounter,mtvCounter);
-      }
-       if (bqnCounter >=4){
-         nextAction = exchangeStudents(g,nextAction,mtvCounter,mmoneyCounter);
-      }
-       if (mjCounter >=4){
-         nextAction = exchangeStudents(g,nextAction,mmoneyCounter,bpsCounter);
-      }
-      if (mtvCounter >=4){
-         nextAction = exchangeStudents(g,nextAction,bpsCounter,bqnCounter);
-      }
-      if (mmoneyCounter >=4){
-         nextAction = exchangeStudents(g,nextAction,bqnCounter,mjCounter);
-      }
+      
+   
       /*
       if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
          &&(mmoneyCounter >= 3)&&(GO8Counter <= 8){
@@ -120,7 +138,7 @@ static action spinoff(action nextAction){
    return doSpinoff;
 }
 
-static action buildARC(Game g, action nextAction, int arcCounter,int currentPlayer){
+static action buildARC(Game g, action nextAction,int currentPlayer){
    
    action newAction = nextAction;
    newAction.actionCode = OBTAIN_ARC;
@@ -196,7 +214,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer){
       newAction.destination[counter] = tempPath[counter];
       if (isLegalAction(g, newAction) == TRUE){
          moveMade = 1;
-         printf("move Made %s\n", tempPath);
+         //printf("move Made %s\n", tempPath);
          //printf("changing movemade %d\n", moveMade);
       }
       counter++;
@@ -204,12 +222,13 @@ static action buildCampus(Game g,action nextAction,int currentPlayer){
 
    if (moveMade == 0) {
       newAction.actionCode = PASS;
+      //printf("unchanging movemade %d\n", moveMade);
    }
 
    return newAction;
 }
 
-static action exchangeBPS(Game g,nextAction,int mjCounter, int mtvCounter){
+static action exchangeBPS(Game g,action nextAction,int mjCounter, int mtvCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
@@ -226,7 +245,7 @@ static action exchangeBPS(Game g,nextAction,int mjCounter, int mtvCounter){
    return newAction;
 }
 
-static action exchangeBQN(Game g,nextAction,int mtvCounter, int mmoneyCounter){
+static action exchangeBQN(Game g,action nextAction,int mtvCounter, int mmoneyCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
@@ -235,7 +254,7 @@ static action exchangeBQN(Game g,nextAction,int mtvCounter, int mmoneyCounter){
       newAction.disciplineTo = STUDENT_MTV;
    } else if (mmoneyCounter <= 1){
       newAction.disciplineFrom = STUDENT_BQN;
-      newAction.disciplineTo = STUDENT_MMMONEY;
+      newAction.disciplineTo = STUDENT_MMONEY;
    } else {
       newAction.disciplineFrom = STUDENT_BQN;
       newAction.disciplineTo = STUDENT_BPS;
@@ -243,7 +262,7 @@ static action exchangeBQN(Game g,nextAction,int mtvCounter, int mmoneyCounter){
    return newAction;
 }
 
-static action exchangeMJ(Game g,nextAction,int mmoneyCounter, int bpsCounter){
+static action exchangeMJ(Game g,action nextAction,int mmoneyCounter, int bpsCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
@@ -260,7 +279,7 @@ static action exchangeMJ(Game g,nextAction,int mmoneyCounter, int bpsCounter){
    return newAction;
 }
 
-static action exchangeMTV(Game g,nextAction,int bpsCounter, int bqnCounter){
+static action exchangeMTV(Game g,action nextAction,int bpsCounter, int bqnCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
@@ -277,7 +296,7 @@ static action exchangeMTV(Game g,nextAction,int bpsCounter, int bqnCounter){
    return newAction;
 }
 
-static action exchangeMMONEY(Game g,nextAction,int bqnCounter, int mjCounter){
+static action exchangeMMONEY(Game g,action nextAction,int bqnCounter, int mjCounter){
    
    action newAction = nextAction;
    newAction.actionCode = RETRAIN_STUDENTS;
@@ -293,6 +312,7 @@ static action exchangeMMONEY(Game g,nextAction,int bqnCounter, int mjCounter){
    }
    return newAction;
 }
+
 /*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
    action newAction = nextAction;
    nextAction = go8PathGenerator(nextAction, int currentPlayer);
