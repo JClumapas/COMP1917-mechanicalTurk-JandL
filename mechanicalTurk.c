@@ -13,8 +13,8 @@
 #include "mechanicalTurk.h"
 
 //#define MAX_CAMPUSES 54
-#define MAX_ARCS 90
-#define WORKING_PATH {'L','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','L','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','B','L','L','R','R','R','R','R'}
+#define MAX_ARCS 92
+#define WORKING_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
 
 /*enter values according to working path
 /#define UNI_A_CAMPUS_A 53
@@ -30,9 +30,13 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
 static action buildCampus(Game g, action nextAction,int currentPlayer,int campusCounter);
 static action buildGO8(Game g,action nextAction,int currentPlayer);
 static action exchangeBPS(Game g,action nextAction,int mjCounter, int mtvCounter);
+
 static action exchangeBQN(Game g,action nextAction,int mtvCounter,int mmoneyCounter);
+
 static action exchangeMJ(Game g,action nextAction,int mmoneyCounter, int bpsCounter);
+
 static action exchangeMTV(Game g,action nextAction,int bpsCounter,int bqnCounter);
+
 static action exchangeMMONEY(Game g,action nextAction,int bqnCounter,int mjCounter);
 //static action buildGO8(action nextAction, int GO8Counter, int currentPlayer);
 //static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
@@ -55,6 +59,7 @@ action decideAction (Game g) {
    int mjCounter = getStudents(g,currentPlayer,STUDENT_MJ);
    int mtvCounter = getStudents(g,currentPlayer,STUDENT_MTV);
    int mmoneyCounter = getStudents(g,currentPlayer,STUDENT_MMONEY);
+
    int arcCounter = getARCs(g,currentPlayer);
    int campusCounter = getCampuses(g,currentPlayer);
    /*int totalCampuses = 0;
@@ -146,8 +151,8 @@ static action buildGO8(Game g,action nextAction,int currentPlayer){
       i++;
    }
 
-   char tempPath[90] = {'\0'};
-   char workingPath[90] = WORKING_PATH;
+   char tempPath[92] = {'\0'};
+   char workingPath[92] = WORKING_PATH;
 
    i = 0;
    while (i < 90) {
@@ -191,11 +196,11 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
       i++;
    }
 
-   if(arcCounter >= 20){
+   if(arcCounter >= 16){
       newAction.actionCode = PASS;
    } else {
-      char tempPath[90] = {'\0'};
-      char workingPath[90] = WORKING_PATH;
+      char tempPath[92] = {'\0'};
+      char workingPath[92] = WORKING_PATH;
 
      i = 0;
       while (i < 90) {
@@ -233,7 +238,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
    action newAction = nextAction;
    newAction.actionCode = BUILD_CAMPUS;
    
-   if(campusCounter >= 9){
+   if(campusCounter >= 8){
       newAction.actionCode = PASS;
    } else {
       int i = 0;
@@ -242,8 +247,8 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          i++;
       }
 
-      char tempPath[90] = {'\0'};
-      char workingPath[90] = WORKING_PATH;
+      char tempPath[92] = {'\0'};
+      char workingPath[92] = WORKING_PATH;
 
       i = 0;
       while (i < 90) {
