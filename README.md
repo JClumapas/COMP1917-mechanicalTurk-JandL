@@ -1,5 +1,8 @@
 # COMP1917-mechanicalTurk-JandL
 
+### next steps would be to find out the best amount of arcs and campuses to build before just focusing on go8's and spinoffs, ive done a new working path that goes into the middle of the board to start with i think if we can try to aim for specific vertices to build arcs at if we can would be good like aim for a certain students square, we are getting alot of THD's cause ive set the exchange for that at 5 so we can get go8's we could set the exchange to be 3 until we get say 4 campuses then increase it so were not losing students everytime a 7 is rolled and we could try and build a go8 on the best vertice that we want so it doesnt just randomly upgrade the worst place campus and doesnt get utilized, if you think of some more ideas just keep writing on this post.
+
+
 List below - in the planned order you will implement them (first at the top) - your ideas for how you will make your mechanical turk behave.  Give brief reasons why you think each feature is important, and why you have chosen to implement them in this order.
 
 1.  Mr Pass - starts spinoff if has resources, otherwise passes.  Why first? This is required to be the first Turk everyone submits.
