@@ -14,7 +14,9 @@
 
 //#define MAX_CAMPUSES 54
 #define MAX_ARCS 92
-#define WORKING_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
+#define PLAYER_A_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
+#define PLAYER_B_PATH {'R','L','L','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','L','B','L','L','L','L','L','R','L','R','L','L','L','L','L','B','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','L','L'}
+#define PLAYER_C_PATH {'L','R','R','R','L','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','L','L','R','R','R','R','R','B','R','R','L','R','R','R','R','L','B','L','B','L','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','L','R','R','R'}
 #define NUM_VERTEXES 54
 
 #define TRUE 1
@@ -30,7 +32,7 @@ typedef struct _list {
     link head;
 } *list;     
 
-static list newList(void);
+/*static list newList(void);
 static void showList (list listToPrint);
 static void frontInsert (list l, int item);
 static int numItems (list l);
@@ -40,7 +42,7 @@ static int lookup (list l, int position);
 static int vertexDecider(Game g, list regionsAtVertex[]);
 //returns the length of the working path corresponding to the given vertex
 static int pathToVertex(Game g, int vertex);
-
+*/
 /*enter values according to working path
 /#define UNI_A_CAMPUS_A 53
 #define UNI_A_CAMPUS_B 26
@@ -67,6 +69,7 @@ static action exchangeMMONEY(Game g,action nextAction,int bqnCounter,int mjCount
 //static path arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer);
 //static path campusPathGenerator(action nextAction, int currentPlayer);
 //static path go8PathGenerator(action nextAction, int currentPlayer);
+ 
 
 action decideAction (Game g) {
 
@@ -77,6 +80,7 @@ action decideAction (Game g) {
       nextAction.destination[i] = '\0';
       i++;
    }
+  
 //   int currentTurn = getTurnNumber(g);
    int currentPlayer = getWhoseTurn(g);
    int bpsCounter = getStudents(g,currentPlayer,STUDENT_BPS);
@@ -90,10 +94,11 @@ action decideAction (Game g) {
 
    /*int totalCampuses = 0;
    totalCampuses = totalCampuses + getCampuses(g,UNI_A)
-                   + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);
-   int GO8Counter = getGO8s(g,currentPlayer);*/
+                   + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);*/
+   //int GO8Counter = getGO8s(g,currentPlayer);
 
    //Actions for our first turn
+     
       if (bpsCounter >=4){
          
          nextAction = exchangeBPS(g,nextAction,mjCounter,mtvCounter);
@@ -118,10 +123,13 @@ action decideAction (Game g) {
       
       }
       
-      if (mmoneyCounter >=5){
+      if (campusCounter <=4 && mmoneyCounter >=3){
          
          nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
       
+      }else if(mmoneyCounter >= 6){
+         nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
+
       }
       if((nextAction.actionCode == PASS || nextAction.actionCode == RETRAIN_STUDENTS) && (mjCounter >= 2)&&(mmoneyCounter >= 3)){
          nextAction = buildGO8(g,nextAction,currentPlayer);
@@ -134,7 +142,7 @@ action decideAction (Game g) {
          nextAction = buildARC(g,nextAction,currentPlayer,arcCounter);
          //printf("%s\n", nextAction.destination);
       }
-      if (nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
+      if (campusCounter >=6 && nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
          nextAction = spinoff(nextAction);
          //printf("%s\n", nextAction.destination);
       } 
@@ -176,12 +184,33 @@ static action buildGO8(Game g,action nextAction,int currentPlayer){
       newAction.destination[i] = '\0';
       i++;
    }
-
+   char workingPath[92] = {'\0'};
+   char workingPathA[92] = PLAYER_A_PATH;
+   char workingPathB[92] = PLAYER_B_PATH;
+   char workingPathC[92] = PLAYER_C_PATH;
    char tempPath[92] = {'\0'};
-   char workingPath[92] = WORKING_PATH;
+   if(currentPlayer ==  UNI_A){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathA[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_B){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathB[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_C){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathC[i];
+         i++;
+      } 
+   } 
 
    i = 0;
-   while (i < 90) {
+   while (i < 92) {
       tempPath[i] = '\0';
       i++;
    }
@@ -222,11 +251,33 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
       i++;
    }
 
-   if(arcCounter >= 16){
+   if(arcCounter >= 20){
       newAction.actionCode = PASS;
    } else {
-      char tempPath[92] = {'\0'};
-      char workingPath[92] = WORKING_PATH;
+   char workingPath[92] = {'\0'};
+   char workingPathA[92] = PLAYER_A_PATH;
+   char workingPathB[92] = PLAYER_B_PATH;
+   char workingPathC[92] = PLAYER_C_PATH;
+   char tempPath[92] = {'\0'};
+   if(currentPlayer ==  UNI_A){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathA[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_B){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathB[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_C){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathC[i];
+         i++;
+      } 
+   } 
 
      i = 0;
       while (i < 90) {
@@ -264,7 +315,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
    action newAction = nextAction;
    newAction.actionCode = BUILD_CAMPUS;
    
-   if(campusCounter >= 8){
+   if(campusCounter >= 10){
       newAction.actionCode = PASS;
    } else {
       int i = 0;
@@ -272,9 +323,30 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          newAction.destination[i] = '\0';
          i++;
       }
-
-      char tempPath[92] = {'\0'};
-      char workingPath[92] = WORKING_PATH;
+   char workingPath[92] = {'\0'};
+   char workingPathA[92] = PLAYER_A_PATH;
+   char workingPathB[92] = PLAYER_B_PATH;
+   char workingPathC[92] = PLAYER_C_PATH;
+   char tempPath[92] = {'\0'};
+   if(currentPlayer ==  UNI_A){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathA[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_B){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathB[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_C){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathC[i];
+         i++;
+      } 
+   } 
 
       i = 0;
       while (i < 90) {
@@ -394,68 +466,8 @@ static action exchangeMMONEY(Game g,action nextAction,int bqnCounter, int mjCoun
    return newAction;
 }
 
-/*static action buildGO8(action nextAction, int GO8Counter, int currentPlayer){
-   action newAction = nextAction;
-   nextAction = go8PathGenerator(nextAction, int currentPlayer);
-   return newAction;
-   //similar to buildARC and buildCampus
-}*/
+/*
 
-/*static action arcPathGenerator(Game g, action nextAction, int arcCounter, int currentPlayer){
- 
-   action newAction = nextAction;
-   char tempPath[90] = {'\0'};
-   char workingPath[90] = WORKING_PATH;
-   int counter = 0;
-   int moveMade = 0;
-   tempPath[0] = workingPath[0];
-   newAction.destination[0] = tempPath[0];
-   while (moveMade == 0 && counter < MAX_ARCS) {
-      tempPath[counter] = workingPath[counter];
-      newAction.destination[counter] = tempPath[counter];
-      if (isLegalAction(g, newAction) == TRUE){
-         moveMade = 1;
-      }
-      counter++;
-   }
-   return newAction;
-   // doesnt matter where it starts this just looks where we can make an arc on a legal action and makes it straight away
-   
-   action newAction = nextAction;
-   //path destination[PATH_LIMIT]={'\0'};
-   int initialPos = 0;
-   if (currentPlayer == UNI_A){
-      initialPos = UNI_A_CAMPUS_A; //or CAMPUS_B depend on strategy
-   } else if (currentPlayer == UNI_B){
-      initialPos = UNI_B_CAMPUS_A;
-   } else if (currentPlayer == UNI_C){
-      initialPos = UNI_C_CAMPUS_A;
-   }
-
-
-   int counter = 0;
-   while (counter <= (initialPos+1)){
-      tempPath[counter] = workingPath[counter];
-      counter++;
-   }
-   while (counter <= (initialPos+arcCounter+1)){
-      while (getARC(g,tempPath) != VACANT_ARC){
-         if( tempPath[counter]== 'R'){
-            tempPath[counter] = 'L';
-         }else if (tempPath[counter] == 'L'){
-            tempPath[counter]= 'R';
-         }else if (tempPath[counter] == 'B'){
-            tempPath[counter] = 'R';
-         }
-      }
-      counter++;
-   }
-
-
-
-   strncpy(newAction.destination, tempPath, sizeof (tempPath));
-   return newAction;
-}*/
 static void showList (list listToPrint) {
    link current = listToPrint->head;
    while (current != NULL) {
@@ -534,26 +546,26 @@ static int vertexDecider(Game g, list regionsAtVertex[]) {
             pos++;
          }
          pos = 0;
-        /* int region[0] = lookup(regionsAtVertex[vertexCounter],0);
+         int region[0] = lookup(regionsAtVertex[vertexCounter],0);
          int region[1] = lookup(regionsAtVertex[vertexCounter],1);
-         int region[2] = lookup(regionsAtVertex[vertexCounter],2);*/
+         int region[2] = lookup(regionsAtVertex[vertexCounter],2);
          int student[3] = {0};
          while (pos < 3) {
             int student[pos] = getDiscipline(g,region[pos]);
             pos++;
          }
-         /*int student[0] = getDiscipline(g,region1);
+         int student[0] = getDiscipline(g,region1);
          int student[1] = getDiscipline(g,region2);
-         int student[2] = getDiscipline(g,region3);*/  
+         int student[2] = getDiscipline(g,region3);
       }
       pos = 0
       int matchCount = 0;
       while (pos < 3) {
-         if (student[pos] == /*student that we want*/) {
+         if (student[pos] == student that we want) {
             matchCount++;
-         }else if (student[pos] == /*another student we want*/){
+         }else if (student[pos] == another student we want){
             matchCount++;
-         }else if (student[pos] == /*third student we want*/){
+         }else if (student[pos] == third student we want){
             matchCount++;
          }
          pos++;
@@ -626,3 +638,4 @@ static int pathToVertex(Game g, int vertex){
    pathlengthA[53] = 43;
    return pathLength;
 }
+*/
