@@ -14,7 +14,9 @@
 
 //#define MAX_CAMPUSES 54
 #define MAX_ARCS 92
-#define WORKING_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
+#define PLAYER_A_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
+#define PLAYER_B_PATH {'R','L','L','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','R','L','B','L','L','L','L','L','R','L','R','L','L','L','L','L','B','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','L','L'}
+#define PLAYER_C_PATH {'L','R','R','R','L','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','L','B','L','L','L','L','L','R','R','R','R','R','B','R','R','L','R','R','R','R','L','B','L','B','L','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','R','B','R','R','R','B','R','R','R','L','R','R','R'}
 #define NUM_VERTEXES 54
 
 #define TRUE 1
@@ -30,16 +32,20 @@ typedef struct _list {
     link head;
 } *list;     
 
-static list newList(void);
+/*static list newList(void);
 static void showList (list listToPrint);
 static void frontInsert (list l, int item);
 static int numItems (list l);
 static void append (list l, int value);
 static int lookup (list l, int position);
 
-static int vertexDecider(Game g, list regionsAtVertex[]);
+//NOTE: it only finds the first vertex with the students wanted
+// it does not guarantee that it is legal to build on that vertex
+static int vertexDecider(Game g, list regionsAtVertex[],int studentWanted1, int studentWanted2, int studentWanted3);
 //returns the length of the working path corresponding to the given vertex
-static int pathToVertex(Game g, int vertex);
+//working out if its legal to build on this path will have to be done inside the function 
+//where this is used
+static int pathToVertex(Game g, int vertex);*/
 
 /*enter values according to working path
 /#define UNI_A_CAMPUS_A 53
@@ -77,6 +83,7 @@ action decideAction (Game g) {
       nextAction.destination[i] = '\0';
       i++;
    }
+   
 //   int currentTurn = getTurnNumber(g);
    int currentPlayer = getWhoseTurn(g);
    int bpsCounter = getStudents(g,currentPlayer,STUDENT_BPS);
@@ -90,55 +97,43 @@ action decideAction (Game g) {
 
    /*int totalCampuses = 0;
    totalCampuses = totalCampuses + getCampuses(g,UNI_A)
-                   + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);
-   int GO8Counter = getGO8s(g,currentPlayer);*/
+                   + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);*/
+   //int GO8Counter = getGO8s(g,currentPlayer);
 
    //Actions for our first turn
-      if (bpsCounter >=4){
-         
-         nextAction = exchangeBPS(g,nextAction,mjCounter,mtvCounter);
-      
-      }
-       
-      if (bqnCounter >=4){
-         
-          nextAction = exchangeBQN(g,nextAction,mtvCounter,mmoneyCounter);
-      
-      }
-       
-      if (mjCounter >=5){
-         
-         nextAction = exchangeMJ(g,nextAction,mmoneyCounter,bpsCounter);
-      
-      }
-      
-      if (mtvCounter >=4){
-         
-         nextAction = exchangeMTV(g,nextAction,bpsCounter,bqnCounter);
-      
-      }
-      
-      if (mmoneyCounter >=5){
-         
-         nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
-      
-      }
-      if((nextAction.actionCode == PASS || nextAction.actionCode == RETRAIN_STUDENTS) && (mjCounter >= 2)&&(mmoneyCounter >= 3)){
-         nextAction = buildGO8(g,nextAction,currentPlayer);
-      }
-      if ((nextAction.actionCode == PASS) && (bpsCounter >= 1)&&(bqnCounter >= 1)&&(mjCounter >= 1)&&(mtvCounter >= 1)){
-         nextAction = buildCampus(g,nextAction,currentPlayer,campusCounter);
-         //printf("%s\n", nextAction.destination);
-      }
-      if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
-         nextAction = buildARC(g,nextAction,currentPlayer,arcCounter);
-         //printf("%s\n", nextAction.destination);
-      }
-      if (nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
-         nextAction = spinoff(nextAction);
-         //printf("%s\n", nextAction.destination);
-      } 
-      
+   if (bpsCounter >=4){
+      nextAction = exchangeBPS(g,nextAction,mjCounter,mtvCounter);
+   }
+   if (bqnCounter >=4){
+       nextAction = exchangeBQN(g,nextAction,mtvCounter,mmoneyCounter);
+   }
+   if (mjCounter >=5){
+      nextAction = exchangeMJ(g,nextAction,mmoneyCounter,bpsCounter);
+   }
+   if (mtvCounter >=4){
+      nextAction = exchangeMTV(g,nextAction,bpsCounter,bqnCounter);
+   }
+   if (campusCounter <=4 && mmoneyCounter >=3){
+      nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
+   }else if(mmoneyCounter >= 6){
+      nextAction = exchangeMMONEY(g,nextAction,bqnCounter,mjCounter);
+   }
+   if((nextAction.actionCode == PASS || nextAction.actionCode == RETRAIN_STUDENTS) && (mjCounter >= 2)&&(mmoneyCounter >= 3)){
+      nextAction = buildGO8(g,nextAction,currentPlayer);
+   }
+   if ((nextAction.actionCode == PASS) && (bpsCounter >= 1)&&(bqnCounter >= 1)&&(mjCounter >= 1)&&(mtvCounter >= 1)){
+      nextAction = buildCampus(g,nextAction,currentPlayer,campusCounter);
+      //printf("%s\n", nextAction.destination);
+   }
+   if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
+      nextAction = buildARC(g,nextAction,currentPlayer,arcCounter);
+      //printf("%s\n", nextAction.destination);
+   }
+   if (campusCounter >=6 && nextAction.actionCode == PASS && (mjCounter >= 1)&&(mtvCounter >= 1)&&(mmoneyCounter >= 1)){
+      nextAction = spinoff(nextAction);
+      //printf("%s\n", nextAction.destination);
+   } 
+   
    
       /*
       if ((totalCampuses >= (0.7*MAX_CAMPUSES)&&(mjCounter >= 2)
@@ -156,7 +151,6 @@ action decideAction (Game g) {
          nextAction.actionCode = PASS;
       }
    */
-
    return nextAction;
 }
 
@@ -176,12 +170,34 @@ static action buildGO8(Game g,action nextAction,int currentPlayer){
       newAction.destination[i] = '\0';
       i++;
    }
-
+   char workingPath[92] = {'\0'};
+   char workingPathA[92] = PLAYER_A_PATH;
+   char workingPathB[92] = PLAYER_B_PATH;
+   char workingPathC[92] = PLAYER_C_PATH;
    char tempPath[92] = {'\0'};
-   char workingPath[92] = WORKING_PATH;
+   
+   if(currentPlayer ==  UNI_A){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathA[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_B){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathB[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_C){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathC[i];
+         i++;
+      } 
+   } 
 
    i = 0;
-   while (i < 90) {
+   while (i < 92) {
       tempPath[i] = '\0';
       i++;
    }
@@ -222,11 +238,34 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
       i++;
    }
 
-   if(arcCounter >= 16){
+   if(arcCounter >= 20){
       newAction.actionCode = PASS;
    } else {
+      char workingPath[92] = {'\0'};
+      char workingPathA[92] = PLAYER_A_PATH;
+      char workingPathB[92] = PLAYER_B_PATH;
+      char workingPathC[92] = PLAYER_C_PATH;
       char tempPath[92] = {'\0'};
-      char workingPath[92] = WORKING_PATH;
+      if(currentPlayer ==  UNI_A){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathA[i];
+            i++;
+         }
+      }else if(currentPlayer == UNI_B){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathB[i];
+            i++;
+         }
+      }else if(currentPlayer == UNI_C){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathC[i];
+            i++;
+         } 
+      } 
+
 
      i = 0;
       while (i < 90) {
@@ -264,7 +303,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
    action newAction = nextAction;
    newAction.actionCode = BUILD_CAMPUS;
    
-   if(campusCounter >= 8){
+   if(campusCounter >= 10){
       newAction.actionCode = PASS;
    } else {
       int i = 0;
@@ -273,8 +312,30 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          i++;
       }
 
+      char workingPath[92] = {'\0'};
+      char workingPathA[92] = PLAYER_A_PATH;
+      char workingPathB[92] = PLAYER_B_PATH;
+      char workingPathC[92] = PLAYER_C_PATH;
       char tempPath[92] = {'\0'};
-      char workingPath[92] = WORKING_PATH;
+      if(currentPlayer ==  UNI_A){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathA[i];
+            i++;
+         }
+      }else if(currentPlayer == UNI_B){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathB[i];
+            i++;
+         }
+      }else if(currentPlayer == UNI_C){
+         i = 0;
+         while (i < 92) {
+            workingPath[i] = workingPathC[i];
+            i++;
+         } 
+      } 
 
       i = 0;
       while (i < 90) {
@@ -517,10 +578,129 @@ value = current->value;
 }
 
 //choosing a vertex/road to that vertex
-static int vertexDecider(Game g, list regionsAtVertex[]) {
-   list regionsAtVertex[NUM_VERTEXES] = {NULL};
+static int vertexDecider(Game g, int studentWanted1, int studentWanted2, int studentWanted3) {
+   list regionsAtVertex[NUM_VERTEXES];
    
-   //im manually typing up these now
+   int counter = 0;
+   While ( counter < 54){
+      regionsAtVertex[counter] = newList;
+      counter++;
+   }
+
+   frontInsert(regionsAtVertex[0], 0);
+   frontInsert(regionsAtVertex[1], 0);
+   frontInsert(regionsAtVertex[2], 0);
+   append(regionsAtVertex[2],1);
+   frontInsert(regionsAtVertex[3], 1);
+   frontInsert(regionsAtVertex[4], 1);
+   append(regionsAtVertex[4],2);
+   frontInsert(regionsAtVertex[5], 2);
+   frontInsert(regionsAtVertex[6], 2);
+   frontInsert(regionsAtVertex[7], 3);
+   frontInsert(regionsAtVertex[8], 0);
+   append(regionsAtVertex[8],3);
+   frontInsert(regionsAtVertex[9], 0);
+   append(regionsAtVertex[9],3);
+   append(regionsAtVertex[9],4);
+   frontInsert(regionsAtVertex[10], 0);
+   append(regionsAtVertex[10],1);
+   append(regionsAtVertex[10],4);
+   frontInsert(regionsAtVertex[11], 1);
+   append(regionsAtVertex[11],4);
+   append(regionsAtVertex[11],5);
+   frontInsert(regionsAtVertex[12], 1);
+   append(regionsAtVertex[12],2);
+   append(regionsAtVertex[11],5);
+   frontInsert(regionsAtVertex[13], 2);
+   append(regionsAtVertex[13],5);
+   append(regionsAtVertex[13],6);
+   frontInsert(regionsAtVertex[14], 2);
+   append(regionsAtVertex[14],6);
+   frontInsert(regionsAtVertex[15], 6);
+   frontInsert(regionsAtVertex[16], 7);
+   frontInsert(regionsAtVertex[17], 3);
+   append(regionsAtVertex[17],7);
+   frontInsert(regionsAtVertex[18], 3);
+   append(regionsAtVertex[18],7);
+   append(regionsAtVertex[18],8);
+   frontInsert(regionsAtVertex[19], 3);
+   append(regionsAtVertex[19],4);
+   append(regionsAtVertex[19],8);
+   frontInsert(regionsAtVertex[20], 4);
+   append(regionsAtVertex[20],8);
+   append(regionsAtVertex[20],9);
+   frontInsert(regionsAtVertex[21], 4);
+   append(regionsAtVertex[21],5);
+   append(regionsAtVertex[21],9);
+   frontInsert(regionsAtVertex[22], 5);
+   append(regionsAtVertex[22],9);
+   append(regionsAtVertex[22],10);
+   frontInsert(regionsAtVertex[23], 5);
+   append(regionsAtVertex[23],6);
+   append(regionsAtVertex[23],10);
+   frontInsert(regionsAtVertex[24], 6);
+   append(regionsAtVertex[24],10);
+   append(regionsAtVertex[24],11);
+   frontInsert(regionsAtVertex[25], 6);
+   append(regionsAtVertex[25],11);
+   frontInsert(regionsAtVertex[26], 11);
+   frontInsert(regionsAtVertex[27], 7);
+   frontInsert(regionsAtVertex[28], 7);
+   append(regionsAtVertex[28],12);
+   frontInsert(regionsAtVertex[29], 7);
+   append(regionsAtVertex[29],8);
+   append(regionsAtVertex[29],12);
+   frontInsert(regionsAtVertex[30], 8);
+   append(regionsAtVertex[30],12);
+   append(regionsAtVertex[30],13);
+   frontInsert(regionsAtVertex[31], 8);
+   append(regionsAtVertex[31],9);
+   append(regionsAtVertex[31],13);
+   frontInsert(regionsAtVertex[32], 9);
+   append(regionsAtVertex[32],13);
+   append(regionsAtVertex[32],14);
+   frontInsert(regionsAtVertex[33], 9);
+   append(regionsAtVertex[33],10);
+   append(regionsAtVertex[33],14);
+   frontInsert(regionsAtVertex[34], 10);
+   append(regionsAtVertex[34],14);
+   append(regionsAtVertex[34],15);
+   frontInsert(regionsAtVertex[35], 10);
+   append(regionsAtVertex[35],11);
+   append(regionsAtVertex[35],15);
+   frontInsert(regionsAtVertex[36], 11);
+   append(regionsAtVertex[36],15);
+   frontInsert(regionsAtVertex[37], 11);
+   frontInsert(regionsAtVertex[38], 12);
+   frontInsert(regionsAtVertex[39], 12);
+   append(regionsAtVertex[39],16);
+   frontInsert(regionsAtVertex[40], 12);
+   append(regionsAtVertex[40],13);
+   append(regionsAtVertex[40],16);
+   frontInsert(regionsAtVertex[41], 13);
+   append(regionsAtVertex[41],16);
+   append(regionsAtVertex[41],17);
+   frontInsert(regionsAtVertex[42], 13);
+   append(regionsAtVertex[42],14);
+   append(regionsAtVertex[42],17);
+   frontInsert(regionsAtVertex[43], 14);
+   append(regionsAtVertex[43],17);
+   append(regionsAtVertex[43],18);
+   frontInsert(regionsAtVertex[44], 14);
+   append(regionsAtVertex[44],15);
+   append(regionsAtVertex[44],18);
+   frontInsert(regionsAtVertex[45], 15);
+   append(regionsAtVertex[45],18);
+   frontInsert(regionsAtVertex[46], 15);
+   frontInsert(regionsAtVertex[47], 16);
+   frontInsert(regionsAtVertex[48], 16);
+   frontInsert(regionsAtVertex[49], 16);
+   append(regionsAtVertex[49],17);
+   frontInsert(regionsAtVertex[50], 17);
+   frontInsert(regionsAtVertex[51], 17);
+   append(regionsAtVertex[51],18);
+   frontInsert(regionsAtVertex[52], 18);
+   frontInsert(regionsAtVertex[53], 18);
 
    int vertexCounter = 0;
    int vertexChosen = FALSE;
@@ -549,11 +729,11 @@ static int vertexDecider(Game g, list regionsAtVertex[]) {
       pos = 0
       int matchCount = 0;
       while (pos < 3) {
-         if (student[pos] == /*student that we want*/) {
+         if (student[pos] == studentWanted1) {
             matchCount++;
-         }else if (student[pos] == /*another student we want*/){
+         }else if (student[pos] == studentWanted2){
             matchCount++;
-         }else if (student[pos] == /*third student we want*/){
+         }else if (student[pos] == studentWanted3){
             matchCount++;
          }
          pos++;
@@ -566,7 +746,7 @@ static int vertexDecider(Game g, list regionsAtVertex[]) {
    return vertexCounter--;
 }
 
-static int pathToVertex(Game g, int vertex){
+static int pathToVertex(Game g, int currentPlayer, int vertex){
    //corresponding lengths for player A
    //I will do the same once u finish paths for B and C
    int pathLengthA[NUM_VERTEXES] = {0};
@@ -624,5 +804,14 @@ static int pathToVertex(Game g, int vertex){
    pathlengthA[51] = 47;
    pathlengthA[52] = 44;
    pathlengthA[53] = 43;
+   
+   int pathLength = 0;
+   if (currentPlayer == UNI_A){
+   	pathLength = pathLengthA[vertex];
+   } else if (currentPlayer == UNI_B){
+   	pathLength = pathLengthB[vertex];
+   } else if (currentPlayer == UNI_C){
+   	pathLength = pathLengthC[vertex];
+   }
    return pathLength;
 }
