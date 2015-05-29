@@ -15,6 +15,31 @@
 //#define MAX_CAMPUSES 54
 #define MAX_ARCS 92
 #define WORKING_PATH {'R','L','L','R','R','R','L','L','L','R','R','R','R','R','B','R','R','R','R','B','R','R','R','R','B','R','R','R','L','R','R','R','R','B','R','B','R','R','R','R','B','R','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','R','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L','L','B','L','L','L','L','B','L','L'}
+#define NUM_VERTEXES 54
+
+#define TRUE 1
+#define FALSE 0
+
+typedef struct _node *link;    
+typedef struct _node {
+	int value;
+	link next;
+} node;
+
+typedef struct _list {
+    link head;
+} *list;     
+
+static list newList(void);
+static void showList (list listToPrint);
+static void frontInsert (list l, int item);
+static int numItems (list l);
+static void append (list l, int value);
+static int lookup (list l, int position);
+
+static int vertexDecider(Game g, list regionsAtVertex[]);
+//returns the length of the working path corresponding to the given vertex
+static int pathToVertex(Game g, int vertex);
 
 /*enter values according to working path
 /#define UNI_A_CAMPUS_A 53
@@ -62,6 +87,7 @@ action decideAction (Game g) {
 
    int arcCounter = getARCs(g,currentPlayer);
    int campusCounter = getCampuses(g,currentPlayer);
+
    /*int totalCampuses = 0;
    totalCampuses = totalCampuses + getCampuses(g,UNI_A)
                    + getCampuses(g,UNI_B) + getCampuses(g,UNI_C);
@@ -430,47 +456,173 @@ static action exchangeMMONEY(Game g,action nextAction,int bqnCounter, int mjCoun
    strncpy(newAction.destination, tempPath, sizeof (tempPath));
    return newAction;
 }*/
-
-///////////////////////////////
-
-   count = 0;
-
-   char tempPath2[91] = {'\0'};
-
-   char workingPath2[90] = WORKING_PATH;
-
-   while(count<90){
-
-      tempPath2[count] = workingPath2[count];
-
-      printf("[%d]:", count);
-
-      if(count == 51 || count == 52 || count == 53){
-
-         assert(getARC(g, tempPath2) == ARC_A);
-
-         printf("testing arc A\n");
-
-      } else if(count == 44 || count == 43 || count == 42){
-
-         assert(getARC(g, tempPath2) == ARC_B);
-
-         printf("testing arc B\n");
-
-      } else if(count == 8 || count == 6 || count == 7 || count == 58){
-
-         assert(getARC(g, tempPath2) == ARC_C);
-
-         printf("testing arc C\n");
-
-      } else {
-
-         assert(getARC(g, tempPath2) == VACANT_ARC);
-
-         printf("testing arc %d\n", count);
-
-      }
- 
-      count++;
-
+static void showList (list listToPrint) {
+   link current = listToPrint->head;
+   while (current != NULL) {
+      printf("[%d] ->", current->value);
+      current = current->next;
    }
+   printf("X\n");
+}
+static list newList(void) {
+   list newList = malloc(sizeof(list));
+   newList->head = NULL;
+}
+
+static void frontInsert (list l, int item) {
+   link ptrToNewNode = malloc(sizeof(node));
+   assert(ptrToNewNode != NULL);
+   ptrToNewNode->value = item;
+link oldHead = l->head;
+   ptrToNewNode->next = oldHead;
+   l->head = ptrToNewNode;
+}
+static int numItems (list l) {
+   int counter = 0;
+   link current = l->head;
+   while(current != NULL){
+      counter++;
+      current = current->next;
+   }
+   return counter;
+}
+static void append (list l, int value) {
+   link ptrToNewNode = malloc(sizeof(node));
+   assert(ptrToNewNode != NULL);
+   ptrToNewNode->value = value;
+   ptrToNewNode->next = NULL;
+if (l->head == NULL) {
+      l->head = ptrToNewNode;
+   } else {
+      link current = l->head;
+      while (current->next != NULL) {
+         current = current->next;
+      }
+      current->next = ptrToNewNode;
+   }
+}
+static int lookup (list l, int position) {
+   assert (l != NULL);
+   assert (position >= 0);
+int counter = 0;
+   int value = 0;
+   link current = l->head;
+   while (counter < position) {
+      assert (current->next != NULL);
+      current = current->next;
+      counter++;
+   }
+value = current->value;
+   return value;
+}
+
+//choosing a vertex/road to that vertex
+static int vertexDecider(Game g, list regionsAtVertex[]) {
+   list regionsAtVertex[NUM_VERTEXES] = {NULL};
+   
+   //im manually typing up these now
+
+   int vertexCounter = 0;
+   int vertexChosen = FALSE;
+   while ((vertexCounter < 54)||(vertexChosen == FALSE) {
+      int listLength = numItems(regionsAtVertex[vertexCounter]);
+      if (listLength == 3){
+         int region[3] = {0};
+         int pos = 0;
+         while (pos < 3) {
+            region[pos] = lookup(regionsAtVertex[vertexCounter],pos);
+            pos++;
+         }
+         pos = 0;
+        /* int region[0] = lookup(regionsAtVertex[vertexCounter],0);
+         int region[1] = lookup(regionsAtVertex[vertexCounter],1);
+         int region[2] = lookup(regionsAtVertex[vertexCounter],2);*/
+         int student[3] = {0};
+         while (pos < 3) {
+            int student[pos] = getDiscipline(g,region[pos]);
+            pos++;
+         }
+         /*int student[0] = getDiscipline(g,region1);
+         int student[1] = getDiscipline(g,region2);
+         int student[2] = getDiscipline(g,region3);*/  
+      }
+      pos = 0
+      int matchCount = 0;
+      while (pos < 3) {
+         if (student[pos] == /*student that we want*/) {
+            matchCount++;
+         }else if (student[pos] == /*another student we want*/){
+            matchCount++;
+         }else if (student[pos] == /*third student we want*/){
+            matchCount++;
+         }
+         pos++;
+      }
+      if (matchCount == 3) {
+         vertexChosen = TRUE;
+      }
+      vertexCounter++;
+   }
+   return vertexCounter--;
+}
+
+static int pathToVertex(Game g, int vertex){
+   //corresponding lengths for player A
+   //I will do the same once u finish paths for B and C
+   int pathLengthA[NUM_VERTEXES] = {0};
+   pathLengthA[0] = 68;
+   pathLegthA[1] = 69;
+   pathLengthA[2] = 70;
+   pathlengthA[3] = 73;
+   pathlengthA[4] = 74;
+   pathlengthA[5] = 77;
+   pathlengthA[6] = 78;
+   pathLengthA[7] = 64;
+   pathlengthA[8] = 67;
+   pathlengthA[9] = 22;
+   pathlengthA[10] = 21;
+   pathlengthA[11] = 20;
+   pathlengthA[12] = 17;
+   pathLengthA[13] = 16;
+   pathlengthA[14] = 81;
+   pathlengthA[15] = 82;
+   pathlengthA[16] = 62;
+   pathlengthA[17] = 1;
+   pathlengthA[18] = 2;
+   pathlengthA[19] = 25;
+   pathlengthA[20] = 6;
+   pathlengthA[21] = 7;
+   pathlengthA[22] = 8;
+   pathlengthA[23] = 13;
+   pathlengthA[24] = 12;
+   pathlengthA[25] = 85;
+   pathlengthA[26] = 86;
+   pathlengthA[27] = 61;
+   pathlengthA[28] = 60;
+   pathlengthA[29] = 3;
+   pathlengthA[30] = 4;
+   pathlengthA[31] = 5;
+   pathlengthA[32] = 36;
+   pathlengthA[33] = 9;
+   pathlengthA[34] = 10;
+   pathlengthA[35] = 11;
+   pathlengthA[36] = 88;
+   pathlengthA[37] = 87;
+   pathlengthA[38] = 57;
+   pathlengthA[39] = 56;
+   pathlengthA[40] = 29;
+   pathlengthA[41] = 30;
+   pathlengthA[42] = 31;
+   pathlengthA[43] = 38;
+   pathlengthA[44] = 41;
+   pathlengthA[45] = 42;
+   pathlengthA[46] = 91;
+   pathlengthA[47] = 53;
+   pathlengthA[48] = 52;
+   pathlengthA[49] = 51;
+   pathlengthA[50] = 48;
+   pathlengthA[51] = 47;
+   pathlengthA[52] = 44;
+   pathlengthA[53] = 43;
+   return pathLength;
+}
