@@ -328,7 +328,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          tempPath[i] = '\0';
          i++;
       }
-      
+      int pathCount;
       int vertex = chooseVertex(currentPlayer);
       if (vertex != NOT_CHOSEN){
          if (currentPlayer == UNI_A){
@@ -344,14 +344,14 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
             tempPath[counter] = workingPath[counter];
             counter++;
          }
-         newAction.destination = tempPath;
+         newAction.destination = counter;
          if (isLegalAction(g, newAction) == TRUE){
             moveMade = TRUE;
             //printf("move Made %s\n", tempPath);
             //printf("changing movemade %d\n", moveMade);
          }else{
            counter = 0;
-           newAction.actionCode = BUILD_ARC;
+           newAction.actionCode = OBTAIN_ARC;
            char aimPath[pathCount+1] = {'\0'};
            while (moveMade == FALSE && counter < MAX_ARCS) {
               aimPath[counter] = workingPath[counter];
@@ -490,7 +490,7 @@ static void showList (list listToPrint) {
    }
    printf("X\n");
 }
-static list newList(void) {
+static void list newList(void) {
    list newList = malloc(sizeof(list));
    newList->head = NULL;
 }
@@ -547,7 +547,7 @@ static int vertexComparison (Game g, int vertex, int studentWanted1, int student
 
    int counter = 0;
    while ( counter < 54){
-      regionsAtVertex[counter] = newList;
+      regionsAtVertex[counter] = newList(void);
       counter++;
    }
 
@@ -666,7 +666,7 @@ static int vertexComparison (Game g, int vertex, int studentWanted1, int student
    frontInsert(regionsAtVertex[52], 18);
    frontInsert(regionsAtVertex[53], 18);
 
-   int listLength = numItems(regionsAtVertex[vertex];
+   int listLength == numItems(regionsAtVertex[vertex];
    if (listLength == 3){
       int regionID[3] = {0};
       int student[3] = {0};
@@ -712,7 +712,7 @@ static int chooseVertex(int currentPlayer){
       if (vertexChosen = FALSE){
          vertexA = NOT_CHOSEN;
       }
-      vertex = vertexA
+      vertex = vertexA;
    } else if (currentPlayer == UNI_B){
       int vertexB = 10;
       while ((vertexB <= 24)||(vertexChosen == TRUE)) {
@@ -723,10 +723,10 @@ static int chooseVertex(int currentPlayer){
          }
          vertexB++;
       }
-      if (vertexChosen = FALSE){
+      if (vertexChosen == FALSE){
          vertexB = NOT_CHOSEN;
       }
-      vertex = vertexB
+      vertex = vertexB;
    } else if (currentPlayer == UNI_C){
       int vertexC = 10;
       while ((vertexC <= 24)||(vertexChosen == TRUE)) {
@@ -737,7 +737,7 @@ static int chooseVertex(int currentPlayer){
          }
          vertexC++;
       }
-      if (vertexChosen = FALSE){
+      if (vertexChosen == FALSE){
          vertexC = NOT_CHOSEN;
       }
       vertex = vertexC;
@@ -812,7 +812,7 @@ static int vertexCToDefault(int vertex){
 }
 
 static int vertexToPathA(int vertexA){
-   int countToVertex[NUM_VERTECES] = {0};
+   int countToVertex[NUM_VERTEXES] = {0};
 
    countToVertex[1] = 1;
    countToVertex[2] = 2;
@@ -830,11 +830,11 @@ static int vertexToPathA(int vertexA){
    countToVertex[14] = 16;   
 
    int pathLength = countToVertex[vertexA];
-   return pathLegth;
+   return pathLength;
 }
      
 static int vertexToPathB(int vertexB){
-   int countToVertex[NUM_VERTECES] = {0};
+   int countToVertex[NUM_VERTEXES] = {0};
 
    countToVertex[10] = 12;
    countToVertex[11] = 13;
@@ -853,11 +853,11 @@ static int vertexToPathB(int vertexB){
    countToVertex[24] = 34;   
 
    int pathLength = countToVertex[vertexB];
-   return pathLegth;
+   return pathLength;
 }
 
 static int vertexToPathC(int vertexC){
-   int countToVertex[NUM_VERTECES] = {0};
+   int countToVertex[NUM_VERTEXES] = {0};
 
    countToVertex[10] = 12;
    countToVertex[11] = 13;
@@ -876,7 +876,7 @@ static int vertexToPathC(int vertexC){
    countToVertex[24] = 34;   
 
    int pathLength = countToVertex[vertexC];
-   return pathLegth;
+   return pathLength;
 }
 
 
