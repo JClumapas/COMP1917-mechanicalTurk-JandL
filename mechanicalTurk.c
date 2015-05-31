@@ -34,7 +34,7 @@ typedef struct _list {
     link head;
 } *list;     
 
-static list newList(void);
+static void newList(void);
 static void showList (list listToPrint);
 static void frontInsert (list l, int item);
 static int numItems (list l);
@@ -49,6 +49,7 @@ static int vertexCToDefault(int vertex);
 static int vertexToPathA(int vertexA);
 static int vertexToPathB(int vertexB);
 static int vertexToPathC(int vertexC);
+
 
 static action spinoff(action nextAction);
 static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounter);
@@ -344,7 +345,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
             tempPath[counter] = workingPath[counter];
             counter++;
          }
-         newAction.destination = counter;
+         newAction.destination[counter] = tempPath[counter];
          if (isLegalAction(g, newAction) == TRUE){
             moveMade = TRUE;
             //printf("move Made %s\n", tempPath);
@@ -490,7 +491,7 @@ static void showList (list listToPrint) {
    }
    printf("X\n");
 }
-static void list newList(void) {
+static void newList(void) {
    list newList = malloc(sizeof(list));
    newList->head = NULL;
 }
@@ -666,7 +667,7 @@ static int vertexComparison (Game g, int vertex, int studentWanted1, int student
    frontInsert(regionsAtVertex[52], 18);
    frontInsert(regionsAtVertex[53], 18);
 
-   int listLength == numItems(regionsAtVertex[vertex];
+   int listLength = numItems(regionsAtVertex[vertex];
    if (listLength == 3){
       int regionID[3] = {0};
       int student[3] = {0};
