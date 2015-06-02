@@ -214,7 +214,7 @@ static action buildGO8(Game g,action nextAction,int currentPlayer){
    while (moveMade == FALSE && counter < MAX_ARCS) {
       tempPath[counter] = workingPath[counter];
       newAction.destination[counter] = tempPath[counter];
-      if ((isLegalAction(g, newAction) == TRUE)){
+      if (isLegalAction(g, newAction) == TRUE){
          moveMade = TRUE;
       }
       counter++;
@@ -273,7 +273,6 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
          tempPath[i] = '\0';
          i++;
       }
-
    
       int counter = 0;
       int moveMade = FALSE;
@@ -282,7 +281,7 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
       while (moveMade == FALSE && counter < MAX_ARCS) {
          tempPath[counter] = workingPath[counter];
          newAction.destination[counter] = tempPath[counter];
-         if ((isLegalAction(g, newAction) == TRUE)&&(getARC(g,newAction.destination) == VACANT_ARC)){
+         if (isLegalAction(g, newAction) == TRUE){
             moveMade = TRUE;
          }
          counter++;
@@ -311,11 +310,13 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          newAction.destination[i] = '\0';
          i++;
       }
+   
    char workingPath[92] = {'\0'};
    char workingPathA[92] = PLAYER_A_PATH;
    char workingPathB[92] = PLAYER_B_PATH;
    char workingPathC[92] = PLAYER_C_PATH;
    char tempPath[92] = {'\0'};
+   
    if(currentPlayer ==  UNI_A){
       i = 0;
       while (i < 92) {
@@ -342,28 +343,24 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          i++;
       }
 
-   
       int counter = 0;
       int moveMade = 0;
-      //printf("max arcs %d\n", MAX_ARCS);
       tempPath[0] = workingPath[0];
       newAction.destination[0] = tempPath[0];
       while (moveMade == 0 && counter < MAX_ARCS) {
          tempPath[counter] = workingPath[counter];
-         //printf("%s\n", tempPath);
-         //printf("Here and counter is %d\n", counter);
          newAction.destination[counter] = tempPath[counter];
          if (isLegalAction(g, newAction) == TRUE){
             moveMade = 1;
-            //printf("move Made %s\n", tempPath);
-            //printf("changing movemade %d\n", moveMade);
          }
          counter++;
       }
 
       if (moveMade == 0) {
-         newAction.actionCode = PASS;
-         //printf("unchanging movemade %d\n", moveMade);
+        nextAction = spinoff(nextAction);
+	if ((isLegalAction(g,nextAction) == FALSE)){
+	newAction.actionCode = PASS;
+	}
       }
    }
    return newAction;
