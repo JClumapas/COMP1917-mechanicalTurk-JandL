@@ -298,12 +298,12 @@ static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounte
    return newAction;
 }
 
-static action buildCampus(Game g,action nextAction,int currentPlayer,int campusCounter, int arcCounter){
+static action buildCampus(Game g,action nextAction,int currentPlayer,int campusCounter){
    
    action newAction = nextAction;
    newAction.actionCode = BUILD_CAMPUS;
    
-   if(campusCounter >= 8){
+   if(campusCounter >= 10){
       newAction.actionCode = PASS;
    } else {
       int i = 0;
@@ -311,59 +311,60 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
          newAction.destination[i] = '\0';
          i++;
       }
-
-      char workingPath[92] = {'\0'};
-      char workingPathA[92] = PLAYER_A_PATH;
-      char workingPathB[92] = PLAYER_B_PATH;
-      char workingPathC[92] = PLAYER_C_PATH;
-      char tempPath[92] = {'\0'};
-      if(currentPlayer ==  UNI_A){
-         i = 0;
-         while (i < 92) {
-            workingPath[i] = workingPathA[i];
-            i++;
-         }
-      }else if(currentPlayer == UNI_B){
-         i = 0;
-         while (i < 92) {
-            workingPath[i] = workingPathB[i];
-            i++;
-         }
-      }else if(currentPlayer == UNI_C){
-         i = 0;
-         while (i < 92) {
-            workingPath[i] = workingPathC[i];
-            i++;
-         } 
+   char workingPath[92] = {'\0'};
+   char workingPathA[92] = PLAYER_A_PATH;
+   char workingPathB[92] = PLAYER_B_PATH;
+   char workingPathC[92] = PLAYER_C_PATH;
+   char tempPath[92] = {'\0'};
+   if(currentPlayer ==  UNI_A){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathA[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_B){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathB[i];
+         i++;
+      }
+   }else if(currentPlayer == UNI_C){
+      i = 0;
+      while (i < 92) {
+         workingPath[i] = workingPathC[i];
+         i++;
       } 
+   } 
 
       i = 0;
       while (i < 90) {
          tempPath[i] = '\0';
          i++;
       }
+
    
       int counter = 0;
-      int moveMade = FALSE;
+      int moveMade = 0;
+      //printf("max arcs %d\n", MAX_ARCS);
       tempPath[0] = workingPath[0];
       newAction.destination[0] = tempPath[0];
-      printf("not here bruz 1/n");
-      while (moveMade == FALSE && counter < MAX_ARCS) {
+      while (moveMade == 0 && counter < MAX_ARCS) {
          tempPath[counter] = workingPath[counter];
+         //printf("%s\n", tempPath);
+         //printf("Here and counter is %d\n", counter);
          newAction.destination[counter] = tempPath[counter];
-         printf("not here bruz 3/n");
-         if ((isLegalAction(g, newAction) == TRUE)&&(getCampus(g,newAction.destination)==VACANT_VERTEX)){
-            moveMade = TRUE;
-            printf("not here bruz 2/n");
+         if (isLegalAction(g, newAction) == TRUE){
+            moveMade = 1;
+            //printf("move Made %s\n", tempPath);
+            //printf("changing movemade %d\n", moveMade);
          }
          counter++;
-      }		 
-      if (moveMade == FALSE) {
-         nextAction = spinoff(nextAction);
-	     if ((isLegalAction(g,nextAction) == FALSE)){
-            newAction.actionCode = PASS;
-         }
-      }		 
+      }
+
+      if (moveMade == 0) {
+         newAction.actionCode = PASS;
+         //printf("unchanging movemade %d\n", moveMade);
+      }
    }
    return newAction;
 }
