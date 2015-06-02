@@ -214,7 +214,7 @@ static action buildGO8(Game g,action nextAction,int currentPlayer){
    while (moveMade == FALSE && counter < MAX_ARCS) {
       tempPath[counter] = workingPath[counter];
       newAction.destination[counter] = tempPath[counter];
-      if ((isLegalAction(g, newAction) == TRUE)&&(getCampus(g,newAction.destination) == VACANT_VERTEX)){
+      if ((isLegalAction(g, newAction) == TRUE)){
          moveMade = TRUE;
       }
       counter++;
