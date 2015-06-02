@@ -357,10 +357,7 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
       }
 
       if (moveMade == 0) {
-        nextAction = spinoff(nextAction);
-	if ((isLegalAction(g,nextAction) == FALSE)){
 	newAction.actionCode = PASS;
-	}
       }
    }
    return newAction;
