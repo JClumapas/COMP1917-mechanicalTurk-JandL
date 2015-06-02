@@ -26,7 +26,7 @@
 
 static action spinoff(action nextAction);
 static action buildARC(Game g, action nextAction,int currentPlayer,int arcCounter);
-static action buildCampus(Game g, action nextAction,int currentPlayer,int campusCounter, int arcCounter);
+static action buildCampus(Game g, action nextAction,int currentPlayer,int campusCounter);
 static action buildGO8(Game g,action nextAction,int currentPlayer);
 static action exchangeBPS(Game g,action nextAction,int mjCounter, int mtvCounter);
 static action exchangeBQN(Game g,action nextAction,int mtvCounter,int mmoneyCounter);
@@ -146,7 +146,7 @@ action decideAction (Game g) {
          nextAction = buildGO8(g,nextAction,currentPlayer);
       }
       if ((nextAction.actionCode == PASS) && (bpsCounter >= 1)&&(bqnCounter >= 1)&&(mjCounter >= 1)&&(mtvCounter >= 1)){
-         nextAction = buildCampus(g,nextAction,currentPlayer,campusCounter,arcCounter);
+         nextAction = buildCampus(g,nextAction,currentPlayer,campusCounter);
       }
       if (nextAction.actionCode == PASS && (bpsCounter >= 1)&&(bqnCounter >= 1)){
          nextAction = buildARC(g,nextAction,currentPlayer,arcCounter);
