@@ -347,11 +347,14 @@ static action buildCampus(Game g,action nextAction,int currentPlayer,int campusC
       int moveMade = FALSE;
       tempPath[0] = workingPath[0];
       newAction.destination[0] = tempPath[0];
+      printf("not here bruz 1/n")
       while (moveMade == FALSE && counter < MAX_ARCS) {
          tempPath[counter] = workingPath[counter];
          newAction.destination[counter] = tempPath[counter];
+         printf("not here bruz 3/n")
          if ((isLegalAction(g, newAction) == TRUE)&&(getCampus(g,newAction.destination)==VACANT_VERTEX)){
             moveMade = TRUE;
+            printf("not here bruz 2/n")
          }
          counter++;
       }		 
